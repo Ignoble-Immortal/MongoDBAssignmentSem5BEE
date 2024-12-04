@@ -1,0 +1,123 @@
+-- Problem 1: Domain Constraints
+
+-- a. Create the Students table
+CREATE TABLE Students (
+    StudentID INT PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
+    Age INT CHECK (Age BETWEEN 18 AND 25),
+    Grade DECIMAL(3, 1) CHECK (Grade BETWEEN 0.0 AND 10.0)
+);
+
+-- b. Insert invalid records
+-- Record violating Age constraint
+INSERT INTO Students (StudentID, Name, Age, Grade)
+VALUES (1, 'John Doe', 17, 8.5);
+
+-- Record violating Grade constraint
+INSERT INTO Students (StudentID, Name, Age, Grade)
+VALUES (2, 'Jane Doe', 20, 11.0);
+
+-- c. Explanation
+-- For the first record, an error will occur because Age = 17 is outside the valid range (18-25).
+-- For the second record, an error will occur because Grade = 11.0 is outside the valid range (0.0-10.0).
+
+-- Problem 2: Entity Integrity Constraints
+
+-- a. Create the Courses table
+CREATE TABLE Courses (
+    CourseID INT PRIMARY KEY,
+    CourseName VARCHAR(100),
+    Credits INT NOT NULL
+);
+
+-- b. Insert a record without specifying CourseID
+INSERT INTO Courses (CourseName, Credits)
+VALUES ('Database Systems', 3);
+
+-- c. Explanation
+-- An error will occur because the PRIMARY KEY (CourseID) cannot be NULL. Entity integrity ensures each row is uniquely identifiable.
+
+-- Problem 3: Referential Integrity Constraints
+
+-- a. Create Products and Orders tables
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY,
+    ProductName VARCHAR(100)
+);
+
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    ProductID INT,
+    OrderQuantity INT,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+-- b. Insert a record into Orders with a non-existent ProductID
+INSERT INTO Orders (OrderID, ProductID, OrderQuantity)
+VALUES (1, 999, 5);
+
+-- Explanation
+-- An error will occur because ProductID = 999 does not exist in the Products table, violating the foreign key constraint.
+
+-- c. Insert valid records
+INSERT INTO Products (ProductID, ProductName)
+VALUES (1, 'Laptop'), (2, 'Smartphone');
+
+INSERT INTO Orders (OrderID, ProductID, OrderQuantity)
+VALUES (1, 1, 2), (2, 2, 1);
+
+-- Problem 4: Key Constraints
+
+-- a. Create the Employees table
+CREATE TABLE Employees (
+    EmployeeID INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Email VARCHAR(100) UNIQUE
+);
+
+-- b. Insert two employees with the same Email
+INSERT INTO Employees (EmployeeID, Name, Email)
+VALUES (1, 'Alice', 'alice@example.com');
+
+INSERT INTO Employees (EmployeeID, Name, Email)
+VALUES (2, 'Bob', 'alice@example.com');
+
+-- Explanation
+-- An error will occur because the Email field is unique, and the second record attempts to insert a duplicate email.
+
+-- c. Insert a record without specifying an email
+INSERT INTO Employees (EmployeeID, Name)
+VALUES (3, 'Charlie');
+
+-- Explanation
+-- The record will insert successfully because Email allows NULL, and NULL is not considered a duplicate value.
+
+-- Problem 5: Combination of Constraints
+
+-- a. Create Accounts and Transactions tables
+CREATE TABLE Accounts (
+    AccountID INT PRIMARY KEY,
+    MobileNumber VARCHAR(10) CHECK (LENGTH(MobileNumber) = 10),
+    Balance DECIMAL(10, 2) CHECK (Balance >= 0)
+);
+
+CREATE TABLE Transactions (
+    TransactionID INT PRIMARY KEY,
+    AccountID INT,
+    TransactionAmount DECIMAL(10, 2) CHECK (TransactionAmount <> 0),
+    FOREIGN KEY (AccountID) REFERENCES Accounts(AccountID)
+);
+
+-- b. Insert a transaction for a non-existent account
+INSERT INTO Transactions (TransactionID, AccountID, TransactionAmount)
+VALUES (1, 999, 100.00);
+
+-- Explanation
+-- An error will occur because AccountID = 999 does not exist in the Accounts table, violating the foreign key constraint.
+
+-- c. Insert valid records
+INSERT INTO Accounts (AccountID, MobileNumber, Balance)
+VALUES (1, '1234567890', 500.00), (2, '0987654321', 1000.00);
+
+INSERT INTO Transactions (TransactionID, AccountID, TransactionAmount)
+VALUES (1, 1, 150.00), (2, 2, -200.00);
